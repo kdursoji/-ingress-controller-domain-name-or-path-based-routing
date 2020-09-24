@@ -1,0 +1,86 @@
+krishna@evoke:~$ vi cafe-ingress.yml
+krishna@evoke:~$ kubectl apply -f cafe-ingress.yml 
+namespace/cafe created
+ingress.extensions/cafe-ingress created
+deployment.apps/coffee created
+service/coffee-svc created
+deployment.apps/tea created
+service/tea-svc created
+krishna@evoke:~$ kubectl get ns
+NAME                   STATUS   AGE
+cafe                   Active   14s
+default                Active   2d8h
+hotel                  Active   66m
+kube-node-lease        Active   2d8h
+kube-public            Active   2d8h
+kube-system            Active   2d8h
+kubernetes-dashboard   Active   2d7h
+krishna@evoke:~$ kubectl get ingress -n cafe
+NAME           CLASS    HOSTS              ADDRESS          PORTS   AGE
+cafe-ingress   <none>   cafe.example.com   192.168.99.112   80      28s
+krishna@evoke:~$ minikube service list
+|----------------------|------------------------------------|--------------|-----|
+|      NAMESPACE       |                NAME                | TARGET PORT  | URL |
+|----------------------|------------------------------------|--------------|-----|
+| cafe                 | coffee-svc                         | No node port |
+| cafe                 | tea-svc                            | No node port |
+| default              | kubernetes                         | No node port |
+| hotel                | hotel-svc                          | No node port |
+| kube-system          | ingress-nginx-controller-admission | No node port |
+| kube-system          | kube-dns                           | No node port |
+| kubernetes-dashboard | dashboard-metrics-scraper          | No node port |
+| kubernetes-dashboard | kubernetes-dashboard               | No node port |
+|----------------------|------------------------------------|--------------|-----|
+krishna@evoke:~$ minikube service list -n cafe
+|-----------|------------|--------------|-----|
+| NAMESPACE |    NAME    | TARGET PORT  | URL |
+|-----------|------------|--------------|-----|
+| cafe      | coffee-svc | No node port |
+| cafe      | tea-svc    | No node port |
+|-----------|------------|--------------|-----|
+krishna@evoke:~$ sudo /etc/hosts
+sudo: /etc/hosts: command not found
+krishna@evoke:~$ sudo gedit /etc/hosts
+
+(gedit:176735): Tepl-WARNING **: 01:52:20.351: GVfs metadata is not supported. Fallback to TeplMetadataManager. Either GVfs is not correctly installed or GVfs metadata are not supported on this platform. In the latter case, you should configure Tepl with --disable-gvfs-metadata.
+krishna@evoke:~$ cat /etc/hosts
+127.0.0.1	localhost
+127.0.1.1	evoke
+
+192.168.99.112  hotel.example.com
+192.168.99.112  cafe.example.com
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+krishna@evoke:~$ kubectl get pod -n cafe
+NAME                      READY   STATUS    RESTARTS   AGE
+coffee-755d68dd75-9pz7s   1/1     Running   0          8m15s
+coffee-755d68dd75-l978w   1/1     Running   0          8m15s
+tea-6c74d89d87-2rqbw      1/1     Running   0          8m14s
+tea-6c74d89d87-fqsv4      1/1     Running   0          8m14s
+tea-6c74d89d87-v7vz5      1/1     Running   0          8m14s
+krishna@evoke:~$ curl http://cafe.example.com/coffee
+Server address: 172.17.0.6:80
+Server name: coffee-755d68dd75-9pz7s
+Date: 24/Sep/2020:20:28:49 +0000
+URI: /coffee
+Request ID: 9c652c7dc8d3186036a63b462be9367b
+krishna@evoke:~$ curl http://cafe.example.com/tea
+Server address: 172.17.0.11:80
+Server name: tea-6c74d89d87-fqsv4
+Date: 24/Sep/2020:20:28:54 +0000
+URI: /tea
+Request ID: 2a6a432ccd66b09a6f6aa08429762859
+krishna@evoke:~$ curl http://hotel.example.com
+Server address: 172.17.0.9:80
+Server name: hotel-6c597bfb95-82vz2
+Date: 24/Sep/2020:20:30:10 +0000
+URI: /
+Request ID: eecd5570ba5465f7c614e4f4f6614b11
+krishna@evoke:~$ 
+
+
